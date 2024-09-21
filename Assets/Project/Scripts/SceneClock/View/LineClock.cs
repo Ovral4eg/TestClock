@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -24,30 +25,34 @@ public class LineClock : MonoBehaviour, IClockView
     
     private void UpdateTime(bool animated = true)
     {
-        string hour = "";
-        string minute = "";
-        string second = "";
+        var stringBuilder = new StringBuilder();
 
         switch (_timer.State)
         {
             case TimerState.Process:
                 {
-                    hour = GetHourStringFromTimer();
-                    minute = GetMinuteStringFromTimer();
+                    stringBuilder.Append(GetHourStringFromTimer());
+                    stringBuilder.Append(':');
+
+                    stringBuilder.Append(GetMinuteStringFromTimer());
+                    stringBuilder.Append(":");
                 }
                 break;
 
             case TimerState.Pause:
                 {
-                    hour = _inputHour.text;
-                    minute = _inputMinute.text;
+                    stringBuilder.Append(_inputHour.text);
+                    stringBuilder.Append(':');
+
+                    stringBuilder.Append(_inputMinute.text);
+                    stringBuilder.Append(":");
                 }
                 break;
         }
 
-        second = GetSecondStringFromTimer();
+        stringBuilder.Append(GetSecondStringFromTimer());
 
-        _textTime.text = $"{hour}:{minute}:{second}";        
+        _textTime.text = $"{stringBuilder}";
     }
 
     private void OnTimerTick(object sender, EventArgs e)
@@ -81,7 +86,7 @@ public class LineClock : MonoBehaviour, IClockView
         {
             manualHour = Convert.ToInt32(_inputHour.text);
             if (manualHour < 0) manualHour = 0;
-            if (manualHour > 24) manualHour = 0;
+            if (manualHour >= 24) manualHour = 0;
 
             if (manualHour < 10) _inputHour.text = $"0{manualHour}";
         }
@@ -95,7 +100,7 @@ public class LineClock : MonoBehaviour, IClockView
         {
             manualMinute = Convert.ToInt32(_inputMinute.text);
             if (manualMinute < 0) manualMinute = 0;
-            if (manualMinute > 60) manualMinute = 0;
+            if (manualMinute >= 60) manualMinute = 0;
 
             if (manualMinute < 10) _inputMinute.text = $"0{manualMinute}";
         }
