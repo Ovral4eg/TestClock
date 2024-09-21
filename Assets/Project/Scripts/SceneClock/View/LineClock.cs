@@ -106,8 +106,6 @@ public class LineClock : MonoBehaviour, IClockView
         }
 
         OnManualChange?.Invoke(this, new ManualChangeArgs { clockView = this });
-
-        Debug.Log($"end input");
     }
 
     public TimeSpan GetTimeFromClock()
