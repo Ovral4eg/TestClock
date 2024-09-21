@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +8,11 @@ public class UiClockView : MonoBehaviour, ITimeView
     public GameObject GameObject { get => gameObject; }
     [SerializeField] private Transform _containerClocks;
     private List<IClockView> _clocks = new List<IClockView>();
+    private ITimeDataProvider _dataProvider;
     private ILocalTimer _timer;
-    public void Init(ILocalTimer timer)
+    public void Init(ITimeDataProvider dataProvider, ILocalTimer timer)
     {
+        _dataProvider = dataProvider;
         _timer = timer;
 
         //создаем круглые часы
@@ -24,8 +28,34 @@ public class UiClockView : MonoBehaviour, ITimeView
         _clocks.Add(lineClock);
         AddClock(lineClock);
         lineClock.OnManualChange += AnyClock_OnManualChange;
+
+        StartCoroutine(RoutineStart());
     }   
-   
+
+    private IEnumerator RoutineStart()
+    {
+        //пытаемся синхронизировать время
+        yield return TrySyncTime();
+
+        //запускаем локальный таймер
+        _timer.StartTimer(_dataProvider.DateTime);
+
+        //отслеживаем, когда на локальном таймере пройдет час
+        _timer.OnHourPass += Timer_OnHourPass;
+    }
+
+    private void Timer_OnHourPass(object sender, EventArgs e)
+    {
+        StartCoroutine(TrySyncTime());
+    }
+
+    IEnumerator TrySyncTime()
+    {
+        yield return _dataProvider.SyncTimeData(0);
+
+        _timer.SetTimeServer(_dataProvider);
+    }
+
     public void AddClock(IClockView clock)
     {
         clock.Transform.SetParent(_containerClocks);

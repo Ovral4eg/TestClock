@@ -3,5 +3,5 @@
 public interface ITimeView
 {
     GameObject GameObject { get; }
-    void Init(ILocalTimer timer);  
+    void Init(ITimeDataProvider _dataProvider,ILocalTimer timer);  
 }

@@ -15,6 +15,8 @@ public class UpdateLocalTimer : MonoBehaviour, ILocalTimer
         this.Time = time;
 
         _state = TimerState.Process;
+
+        OnTimerTick?.Invoke(this, EventArgs.Empty);
     }
     public void SwitchState()
     {

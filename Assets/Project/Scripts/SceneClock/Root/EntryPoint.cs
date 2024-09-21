@@ -46,39 +46,12 @@ public class EntryPoint
         _timer = new GameObject("Timer").AddComponent<UpdateLocalTimer>();       
     }
 
+    private ITimeView _uiClockView;
     private void Run()
     {
-        _coroutines.StartCoroutine(StartClock());
-    }
-
-    private ITimeView _uiClockView;
-    private IEnumerator StartClock()
-    {
-        //настраиваем отображение времени
         var prefabUiClock = Resources.Load<UiClockView>("UiClockView");
         _uiClockView = Object.Instantiate(prefabUiClock);
         _uiRoot.AttachSceneUi(_uiClockView.GameObject);
-        _uiClockView.Init(_timer);
-
-        //пытаемся синхронизировать время
-        yield return TrySyncTime();
-
-        //запускаем локальный таймер
-        _timer.StartTimer(_dataProvider.DateTime);
-
-        //отслеживаем, когда на локальном таймере пройдет час
-        _timer.OnHourPass += Timer_OnHourPass;
-    }
-
-    private void Timer_OnHourPass(object sender, EventArgs e)
-    {
-        _coroutines. StartCoroutine(TrySyncTime());
-    }
-
-    IEnumerator TrySyncTime()
-    {
-        yield return _dataProvider.SyncTimeData(0);
-
-        _timer.SetTimeServer(_dataProvider);
-    }
+        _uiClockView.Init(_dataProvider,_timer);
+    }   
 }
