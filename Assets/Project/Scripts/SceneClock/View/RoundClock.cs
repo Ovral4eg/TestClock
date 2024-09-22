@@ -58,11 +58,12 @@ public class RoundClock : MonoBehaviour, IClockView
         //поворот часовой стрелки с учетом минут
         var hoursAngle = Quaternion.identity;
         int hour = _timer.Time.Hour;
-        if (hour > 12)
+        if (hour >= 12)
         {
             _isPM = true;
             hour -= 12;
         }
+
         var minutesInterpolate = 1f / 60f * _timer.Time.Minute;
         hoursAngle = Quaternion.Euler(0, 0, _hourAngle * hour + _hourAngle * minutesInterpolate);
 
