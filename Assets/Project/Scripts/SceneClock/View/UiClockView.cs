@@ -15,15 +15,17 @@ public class UiClockView : MonoBehaviour, ITimeView
         _dataProvider = dataProvider;
         _timer = timer;
 
+        var clockFabric = new ClockFabric();
+
         //создаем круглые часы
-        var roundClock = CreateRoundClock();
+        var roundClock = clockFabric.CreateRoundClock();
         roundClock.SetTime(timer);
         _clocks.Add(roundClock);
         AddClock(roundClock);
         roundClock.OnManualChange += AnyClock_OnManualChange;
 
         //создаем строчные часы
-        var lineClock = CreateLineClock();
+        var lineClock = clockFabric.CreateLineClock();
         lineClock.SetTime(timer);
         _clocks.Add(lineClock);
         AddClock(lineClock);
@@ -61,23 +63,7 @@ public class UiClockView : MonoBehaviour, ITimeView
         clock.Transform.SetParent(_containerClocks);
 
         clock.Transform.localScale = Vector3.one;
-    }
-
-    public IClockView CreateRoundClock()
-    {
-        var prefabUiClock = Resources.Load<RoundClock>("RoundClock");
-        var clock = Instantiate(prefabUiClock);
-
-        return clock;
-    }
-
-    public IClockView CreateLineClock()
-    {
-        var prefabUiClock = Resources.Load<LineClock>("LineClock");
-        var clock = Instantiate(prefabUiClock);
-
-        return clock;
-    }
+    }   
 
     private void AnyClock_OnManualChange(object sender, ManualChangeArgs e)
     {
